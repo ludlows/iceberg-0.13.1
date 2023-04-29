@@ -183,7 +183,7 @@ public class TestRewriteDataFilesProcedure extends SparkExtensionsTestBase {
     // select only 5 files for compaction (files that may have c1 = 1)
     List<Object[]> output = sql(
             "CALL %s.system.rewrite_data_files(table => '%s'," +
-                    " where => '1 = 1')", catalogName, tableIdent);
+                    " where => '1 = 1', options => map('min-input-files','1'))", catalogName, tableIdent);
 
     assertEquals("Action should rewrite 10 data files and add 1 data files",
             ImmutableList.of(row(10, 1)),

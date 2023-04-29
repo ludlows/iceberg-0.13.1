@@ -56,7 +56,7 @@ object SparkExpressionConverter {
       convertToIcebergExpression(sparkExpressionOption.get)
     } else {
       val tableAttrs = session.table(tableName).queryExecution.analyzed.output
-      val firstColumn = tableAttrs.head
+      val firstColumn = tableAttrs.head.name
       val whereExpression = s"$firstColumn is null and $where"
       val optimizedLogicalPlan = collectOptimizedLogicalPlan(session, tableName, whereExpression)
       if (optimizedLogicalPlan.containsChild.isEmpty) { org.apache.iceberg.expressions.Expressions.alwaysFalse() }
