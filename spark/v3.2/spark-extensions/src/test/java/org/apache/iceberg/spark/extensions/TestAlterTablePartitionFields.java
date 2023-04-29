@@ -98,6 +98,25 @@ public class TestAlterTablePartitionFields extends SparkExtensionsTestBase {
   }
 
   @Test
+  public void testAddTruncatePartitionWithCapitalTruncate() {
+    sql("CREATE TABLE %s (id bigint NOT NULL, category string, ts timestamp, data string) USING iceberg", tableName);
+    Table table = validationCatalog.loadTable(tableIdent);
+
+    Assert.assertTrue("Table should start unpartitioned", table.spec().isUnpartitioned());
+
+    sql("ALTER TABLE %s ADD PARTITION FIELD TRUNCATE(data, 4)", tableName);
+
+    table.refresh();
+
+    PartitionSpec expected = PartitionSpec.builderFor(table.schema())
+            .withSpecId(1)
+            .truncate("data", 4, "data_trunc_4")
+            .build();
+
+    Assert.assertEquals("Should have new spec field", expected, table.spec());
+  }
+
+  @Test
   public void testAddYearsPartition() {
     sql("CREATE TABLE %s (id bigint NOT NULL, category string, ts timestamp, data string) USING iceberg", tableName);
     Table table = validationCatalog.loadTable(tableIdent);
