@@ -25,18 +25,10 @@ private[sql] object TruncateTransform {
   def unapply(expr: Expression): Option[(Int, FieldReference)] = expr match {
     case transform: Transform =>
       transform match {
-        case NamedTransform(truncateName, Seq(Ref(seq: Seq[String]), Lit(value: Int, IntegerType))) =>
-          if (truncateName.equalsIgnoreCase("truncate")) {
-            Some((value, FieldReference(seq)))
-          } else {
-            None
-          }
-        case NamedTransform(truncateName, Seq(Lit(value: Int, IntegerType), Ref(seq: Seq[String]))) =>
-          if (truncateName.equalsIgnoreCase("truncate")) {
-            Some((value, FieldReference(seq)))
-          } else {
-            None
-          }
+        case NamedTransform("truncate", Seq(Ref(seq: Seq[String]), Lit(value: Int, IntegerType))) =>
+          Some((value, FieldReference(seq)))
+        case NamedTransform("truncate", Seq(Lit(value: Int, IntegerType), Ref(seq: Seq[String]))) =>
+          Some((value, FieldReference(seq)))
         case _ =>
           None
       }
