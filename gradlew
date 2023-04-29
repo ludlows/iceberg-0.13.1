@@ -86,6 +86,8 @@ mkdir -p $APP_HOME/gradle/wrapper/
 if [ ! -e $APP_HOME/gradle/wrapper/gradle-wrapper.jar ]; then
     echo "downloading gradle-wrapper.jar"
     curl -o $APP_HOME/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v7.3.3/gradle/wrapper/gradle-wrapper.jar
+    echo "copy gradle.properties to  $APP_HOME/gradle/wrapper/"
+    cp gradle.properties  $APP_HOME/gradle/wrapper/
 fi
 
 APP_NAME="Gradle"
