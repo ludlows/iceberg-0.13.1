@@ -154,6 +154,46 @@ public class TestRewriteDataFilesProcedure extends SparkExtensionsTestBase {
   }
 
   @Test
+  public void testRewriteDataFilesWithDeterministicFalseFilter() {
+    createTable();
+    // create 10 files under non-partitioned table
+    insertData(10);
+    List<Object[]> expectedRecords = currentData();
+
+    // select only 5 files for compaction (files that may have c1 = 1)
+    List<Object[]> output = sql(
+            "CALL %s.system.rewrite_data_files(table => '%s'," +
+                    " where => 'c1 = 1 and c2 is not null and 0 = 1')", catalogName, tableIdent);
+
+    assertEquals("Action should rewrite 0 data files and add 0 data files",
+            ImmutableList.of(row(0, 0)),
+            output);
+
+    List<Object[]> actualRecords = currentData();
+    assertEquals("Data after compaction should not change", expectedRecords, actualRecords);
+  }
+
+  @Test
+  public void testRewriteDataFilesWithDeterministicTrueFilter() {
+    createTable();
+    // create 10 files under non-partitioned table
+    insertData(10);
+    List<Object[]> expectedRecords = currentData();
+
+    // select only 5 files for compaction (files that may have c1 = 1)
+    List<Object[]> output = sql(
+            "CALL %s.system.rewrite_data_files(table => '%s'," +
+                    " where => '1 = 1')", catalogName, tableIdent);
+
+    assertEquals("Action should rewrite 10 data files and add 1 data files",
+            ImmutableList.of(row(10, 1)),
+            output);
+
+    List<Object[]> actualRecords = currentData();
+    assertEquals("Data after compaction should not change", expectedRecords, actualRecords);
+  }
+
+  @Test
   public void testRewriteDataFilesWithFilterOnPartitionTable() {
     createPartitionTable();
     // create 5 files for each partition (c2 = 'foo' and c2 = 'bar')

@@ -23,14 +23,12 @@ package org.apache.iceberg.spark.procedures;
 import java.util.Map;
 import org.apache.iceberg.SortOrder;
 import org.apache.iceberg.Table;
-import org.apache.iceberg.actions.BaseRewriteDataFilesResult;
 import org.apache.iceberg.actions.RewriteDataFiles;
-import org.apache.iceberg.relocated.com.google.common.collect.Lists;
+import org.apache.iceberg.expressions.Expression;
 import org.apache.iceberg.relocated.com.google.common.collect.Maps;
 import org.apache.iceberg.spark.procedures.SparkProcedures.ProcedureBuilder;
 import org.apache.spark.sql.AnalysisException;
 import org.apache.spark.sql.catalyst.InternalRow;
-import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.catalyst.plans.logical.SetWriteDistributionAndOrdering;
 import org.apache.spark.sql.catalyst.plans.logical.SortOrderParserUtil;
@@ -111,11 +109,6 @@ class RewriteDataFilesProcedure extends BaseProcedure {
 
       String where = args.isNullAt(4) ? null : args.getString(4);
 
-      if (where != null && SparkExpressionConverter.checkWhereAlwaysFalse(spark(), table.name(), where)) {
-        RewriteDataFiles.Result result = new BaseRewriteDataFilesResult(Lists.newArrayList());
-        return toOutputRows(result);
-      }
-
       action = checkAndApplyFilter(action, where, table.name());
 
       RewriteDataFiles.Result result = action.execute();
@@ -127,8 +120,8 @@ class RewriteDataFilesProcedure extends BaseProcedure {
   private RewriteDataFiles checkAndApplyFilter(RewriteDataFiles action, String where, String tableName) {
     if (where != null) {
       try {
-        Expression expression = SparkExpressionConverter.collectResolvedSparkExpression(spark(), tableName, where);
-        return action.filter(SparkExpressionConverter.convertToIcebergExpression(expression));
+        Expression expression = SparkExpressionConverter.collectResolvedIcebergExpression(spark(), tableName, where);
+        return action.filter(expression);
       } catch (AnalysisException e) {
         throw new IllegalArgumentException("Cannot parse predicates in where option: " + where);
       }
