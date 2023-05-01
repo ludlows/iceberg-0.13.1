@@ -19,9 +19,11 @@
 
 ![](site/docs/img/Iceberg-logo.png)
 
-[![](https://github.com/apache/iceberg/actions/workflows/java-ci.yml/badge.svg)](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/java-ci.yml)
-[![](https://github.com/apache/iceberg/actions/workflows/python-ci.yml/badge.svg)](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/python-ci.yml)
-[![Slack](https://img.shields.io/badge/chat-on%20Slack-brightgreen.svg)](https://apache-iceberg.slack.com/)
+A customized version of apache iceberg 0.13.1 .
+
+[![](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/java-ci.yml/badge.svg)](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/java-ci.yml)
+[![](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/python-ci.yml/badge.svg)](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/python-ci.yml)
+
 
 Apache Iceberg is a new table format for storing large, slow-moving tabular data. It is designed to improve on the de-facto standard table layout built into Hive, Trino, and Spark.
 
