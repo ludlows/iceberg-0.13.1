@@ -171,7 +171,7 @@ project(':iceberg-flink:iceberg-flink-runtime-1.14') {
     relocate 'io.airlift', 'org.apache.iceberg.shaded.io.airlift'
     relocate 'org.threeten.extra', 'org.apache.iceberg.shaded.org.threeten.extra'
 
-    classifier null
+    archiveClassifier.set(null)
   }
 
   jar {

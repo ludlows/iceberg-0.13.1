@@ -164,9 +164,9 @@ project(':iceberg-bundled-guava') {
   }
 
   shadowJar {
-    classifier null
-    configurations = [project.configurations.compileClasspath]
-    zip64 true
+     archiveClassifier.set(null)
+     configurations = [project.configurations.compileClasspath]
+     zip64 true
 
     // include the LICENSE and NOTICE files for the shaded Jar
     from(projectDir) {
