@@ -20,6 +20,7 @@
 ![](site/docs/img/Iceberg-logo.png)
 
 A customized version of apache iceberg 0.13.1 .
+It is enough for batch-processing scenarios.
 
 [![](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/java-ci.yml/badge.svg)](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/java-ci.yml)
 [![](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/spark-ci.yml/badge.svg)](https://github.com/ludlows/iceberg-0.13.1/actions/workflows/spark-ci.yml)
@@ -29,30 +30,6 @@ A customized version of apache iceberg 0.13.1 .
 Apache Iceberg is a new table format for storing large, slow-moving tabular data. It is designed to improve on the de-facto standard table layout built into Hive, Trino, and Spark.
 
 Background and documentation is available at <https://iceberg.apache.org>
-
-
-## Status
-
-Iceberg is under active development at the Apache Software Foundation.
-
-The core Java library that tracks table snapshots and metadata is complete, but still evolving. Current work is focused on adding row-level deletes and upserts, and integration work with new engines like Flink and Hive.
-
-The [Iceberg format specification][iceberg-spec] is being actively updated and is open for comment. Until the specification is complete and released, it carries no compatibility guarantees. The spec is currently evolving as the Java reference implementation changes.
-
-[Java API javadocs][iceberg-javadocs] are available for the master.
-
-[iceberg-javadocs]: https://iceberg.apache.org/javadoc/master
-[iceberg-spec]: https://iceberg.apache.org/spec
-
-
-## Collaboration
-
-Iceberg tracks issues in GitHub and prefers to receive contributions as pull requests.
-
-Community discussions happen primarily on the [dev mailing list][dev-list] or on specific issues.
-
-[dev-list]: mailto:dev@iceberg.apache.org
-
 
 ### Building
 
