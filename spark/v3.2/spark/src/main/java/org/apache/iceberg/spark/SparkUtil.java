@@ -250,4 +250,9 @@ public class SparkUtil {
 
     return filterExpressions;
   }
+
+  public static boolean caseSensitive(SparkSession spark) {
+    return Boolean.parseBoolean(spark.conf().get("spark.sql.caseSensitive"));
+  }
+
 }

@@ -38,14 +38,14 @@ public interface RewriteDataFiles extends SnapshotUpdate<RewriteDataFiles, Rewri
    * The default is false, which produces a single commit when the entire job has completed.
    */
   String PARTIAL_PROGRESS_ENABLED = "partial-progress.enabled";
-  boolean PARTIAL_PROGRESS_ENABLED_DEFAULT = false;
+  boolean PARTIAL_PROGRESS_ENABLED_DEFAULT = true;
 
   /**
    * The maximum amount of Iceberg commits that this rewrite is allowed to produce if partial progress is enabled. This
    * setting has no effect if partial progress is disabled.
    */
   String PARTIAL_PROGRESS_MAX_COMMITS = "partial-progress.max-commits";
-  int PARTIAL_PROGRESS_MAX_COMMITS_DEFAULT = 10;
+  int PARTIAL_PROGRESS_MAX_COMMITS_DEFAULT = 100;
 
   /**
    * The entire rewrite operation is broken down into pieces based on partitioning and within partitions based

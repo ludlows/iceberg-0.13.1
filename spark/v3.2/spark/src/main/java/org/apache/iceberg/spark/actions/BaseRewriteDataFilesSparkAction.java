@@ -62,6 +62,7 @@ import org.apache.iceberg.relocated.com.google.common.collect.Sets;
 import org.apache.iceberg.relocated.com.google.common.math.IntMath;
 import org.apache.iceberg.relocated.com.google.common.util.concurrent.MoreExecutors;
 import org.apache.iceberg.relocated.com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.iceberg.spark.SparkUtil;
 import org.apache.iceberg.types.Types.StructType;
 import org.apache.iceberg.util.PropertyUtil;
 import org.apache.iceberg.util.StructLikeMap;
@@ -91,9 +92,11 @@ abstract class BaseRewriteDataFilesSparkAction
   private boolean partialProgressEnabled;
   private boolean useStartingSequenceNumber;
   private RewriteStrategy strategy = null;
+  private boolean caseSensitive;
 
   protected BaseRewriteDataFilesSparkAction(SparkSession spark, Table table) {
     super(spark);
+    this.caseSensitive = SparkUtil.caseSensitive(spark);
     this.table = table;
   }
 
@@ -178,6 +181,7 @@ abstract class BaseRewriteDataFilesSparkAction
   private Map<StructLike, List<List<FileScanTask>>> planFileGroups(long startingSnapshotId) {
     CloseableIterable<FileScanTask> fileScanTasks = table.newScan()
         .useSnapshot(startingSnapshotId)
+        .caseSensitive(caseSensitive)
         .filter(filter)
         .ignoreResiduals()
         .planFiles();

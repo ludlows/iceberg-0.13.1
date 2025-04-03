@@ -24,9 +24,10 @@ import org.apache.spark.sql.AnalysisException
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.catalyst.expressions.Attribute
 import org.apache.spark.sql.catalyst.expressions.Expression
+import org.apache.spark.sql.catalyst.expressions.Literal
 import org.apache.spark.sql.catalyst.plans.logical.Filter
 import org.apache.spark.sql.catalyst.plans.logical.LeafNode
-import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan
+import org.apache.spark.sql.catalyst.plans.logical.LocalRelation
 
 object SparkExpressionConverter {
 
@@ -37,31 +38,19 @@ object SparkExpressionConverter {
     SparkFilters.convert(DataSourceStrategy.translateFilter(sparkExpression, supportNestedPredicatePushdown = true).get)
   }
 
-  @throws[AnalysisException]
-  private def collectOptimizedLogicalPlan(session: SparkSession, tableName: String, where: String): LogicalPlan = {
+   @throws[AnalysisException]
+  def collectResolvedIcebergExpression(session: SparkSession,
+                                       tableName: String, where: String): org.apache.iceberg.expressions.Expression = {
     val tableAttrs = session.table(tableName).queryExecution.analyzed.output
     val unresolvedExpression = session.sessionState.sqlParser.parseExpression(where)
     val filter = Filter(unresolvedExpression, DummyRelation(tableAttrs))
-    session.sessionState.executePlan(filter).optimizedPlan
-  }
-
-  @throws[AnalysisException]
-  def collectResolvedIcebergExpression(session: SparkSession,
-                                       tableName: String, where: String): org.apache.iceberg.expressions.Expression = {
-    val optimizedLogicalPlan = collectOptimizedLogicalPlan(session, tableName, where)
-    if (optimizedLogicalPlan.containsChild.nonEmpty) {
-      val sparkExpressionOption = optimizedLogicalPlan.collectFirst {
-        case filter: Filter => filter.condition
-      }
-      convertToIcebergExpression(sparkExpressionOption.get)
-    } else {
-      val tableAttrs = session.table(tableName).queryExecution.analyzed.output
-      val firstColumn = tableAttrs.head.name
-      val whereExpression = s"$firstColumn is null and $where"
-      val optimizedLogicalPlan = collectOptimizedLogicalPlan(session, tableName, whereExpression)
-      if (optimizedLogicalPlan.containsChild.isEmpty) { org.apache.iceberg.expressions.Expressions.alwaysFalse() }
-      else { org.apache.iceberg.expressions.Expressions.alwaysTrue() }
-    }
+    val optimizedLogicalPlan = session.sessionState.executePlan(filter).optimizedPlan
+    val expression = optimizedLogicalPlan.collectFirst {
+      case filter: Filter => filter.condition
+      case dummyRelation: DummyRelation => Literal.TrueLiteral
+      case localRelation: LocalRelation => Literal.FalseLiteral
+    }.getOrElse(throw new AnalysisException("Failed to find filter expression"))
+    convertToIcebergExpression(expression)
   }
 
   private case class DummyRelation(output: Seq[Attribute]) extends LeafNode

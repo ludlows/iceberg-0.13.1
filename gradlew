@@ -80,15 +80,15 @@ do
     esac
 done
 
-APP_HOME=$( cd "${APP_HOME:-./}" && pwd -P ) || exit
-echo "creating path $APP_HOME/gradle/wrapper/"
-mkdir -p $APP_HOME/gradle/wrapper/
-if [ ! -e $APP_HOME/gradle/wrapper/gradle-wrapper.jar ]; then
-    echo "downloading gradle-wrapper.jar"
-    curl -o $APP_HOME/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v7.3.3/gradle/wrapper/gradle-wrapper.jar
-    echo "downloading gradle.properties to  $APP_HOME/gradle/wrapper/"
-    curl -o $APP_HOME/gradle/wrapper/gradle-wrapper.properties https://raw.githubusercontent.com/gradle/gradle/v7.3.3/gradle/wrapper/gradle-wrapper.properties
-fi
+#APP_HOME=$( cd "${APP_HOME:-./}" && pwd -P ) || exit
+#echo "creating path $APP_HOME/gradle/wrapper/"
+#mkdir -p $APP_HOME/gradle/wrapper/
+#if [ ! -e $APP_HOME/gradle/wrapper/gradle-wrapper.jar ]; then
+#    echo "downloading gradle-wrapper.jar"
+#    curl -o $APP_HOME/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v7.3.3/gradle/wrapper/gradle-wrapper.jar
+#    echo "downloading gradle.properties to  $APP_HOME/gradle/wrapper/"
+#    curl -o $APP_HOME/gradle/wrapper/gradle-wrapper.properties https://raw.githubusercontent.com/gradle/gradle/v7.3.3/gradle/wrapper/gradle-wrapper.properties
+#fi
 
 APP_NAME="Gradle"
 APP_BASE_NAME=${0##*/}
@@ -212,6 +212,12 @@ set -- \
         -classpath "$CLASSPATH" \
         org.gradle.wrapper.GradleWrapperMain \
         "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
 
 # Use "xargs" to parse quoted args.
 #
